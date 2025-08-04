@@ -29,31 +29,61 @@ A **Data Warehouse** was chosen as the core architecture, implemented using the 
 #### 🥉 Bronze Layer – Raw Ingestion
 - **Load Type**: Full Load  
 - **Purpose**: Store raw, unprocessed data directly from sources for traceability, auditing, and debugging.  
-- **Notes**: No transformations applied. Includes metadata such as timestamps and source identifiers.
+- **Process**:
+  - Tables created to mirror original CRM and ERP sources.
+  - Data ingested using `BULK INSERT` from CSV files stored in the file system (`C:\sqldata\staging`).
+  - Use of `CHECK_CONSTRAINTS` and `FIRSTROW` options to control data validity and format.
+  - Example Table: `bronze.crm_cust_info`, `bronze.erp_px_cat_g1v2`
 
 #### 🥈 Silver Layer – Cleansed & Enriched
 - **Load Type**: Full Load  
 - **Purpose**: Store cleaned, standardized data that’s ready for integration.  
 - **Processes**:
-  - Null/duplicate handling  
-  - Standardization of fields  
-  - Derived fields and data enrichment
+  - Null handling, removal of duplicates, and type conversions.
+  - Derived columns such as `full_name`, concatenated address fields, formatted phone numbers, etc.
+  - Standardized timestamps (`dwh_create_date`) added for traceability.
+  - All transformations are done in stored procedures like `silver.load_silver`.
+  - Example Tables: `silver.crm_cust_info`, `silver.crm_transactions`, `silver.erp_products`
 
 #### 🥇 Gold Layer – Business-Ready Data
 - **Load Type**: Aggregated and Integrated  
 - **Purpose**: Serve reporting tools with business-contextualized data.  
 - **Processes**:
-  - Apply business logic and rules  
-  - Aggregate key metrics  
-  - Build star schema models (facts and dimensions)
+  - Business logic applied using SQL joins, aggregations, and case statements.
+  - Creation of star schema: Fact and dimension tables.
+  - KPI calculations such as customer transaction value, product category performance, etc.
+  - Ready for BI tools like Power BI or Tableau.
 
 ---
 
 ### 3. 🛠️ Project Initialization
 
-- **Task Management**: Tasks created and tracked using **Notion**  
-- **Naming Conventions**: Standardized conventions for tables, fields, and scripts  
-- **Version Control**: GitHub used for source tracking and collaboration
+- **Task Management**: All planning and sprint tracking was done using **Notion**.
+- **Naming Conventions**: Adopted snake_case for tables and fields for consistency (e.g., `crm_cust_info`, `dwh_create_date`).
+- **Version Control**: Used GitHub to track changes in SQL scripts, stored procedures, and documentation.
+- **Permissions & Environment Setup**:
+  - Used SQL Server Express.
+  - File access permission granted to SQL Server service account.
+  - Manual creation of directory: `C:\sqldata\staging`
+
+---
+
+## 💡 Technical Implementation Highlights
+
+- **Stored Procedures**: 
+  - Modular design for loading each layer (`silver.load_silver`).
+  - Error handling implemented using `TRY...CATCH`.
+  - Execution timestamp tracking via `@batch_start_time` and `@batch_end_time`.
+
+- **Performance Optimization**:
+  - Bulk insert operations for faster ingestion.
+  - Drop-and-recreate strategy in bronze layer to ensure data freshness.
+  - Light transformations in silver layer to prepare data for analytical use.
+
+- **Best Practices Applied**:
+  - Layered medallion architecture
+  - Consistent commenting and documentation inside SQL files
+  - Use of staging directories for decoupling data source from pipeline logic
 
 ---
 
