@@ -53,10 +53,8 @@ A **Data Warehouse** was chosen as the core architecture, implemented using the 
   - Creation of star schema: Fact and dimension tables.
   - KPI calculations such as customer transaction value, product category performance, etc.
   - Ready for BI tools like Power BI or Tableau.
-
----
 ![High Level Architecture](docs/high_level_architecture.jpg)
-
+---
 
 ### 3. 🛠️ Project Initialization
 
