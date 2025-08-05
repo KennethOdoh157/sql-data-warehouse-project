@@ -54,8 +54,6 @@ A **Data Warehouse** was chosen as the core architecture, implemented using the 
   - KPI calculations such as customer transaction value, product category performance, etc.
   - Ready for BI tools like Power BI or Tableau.
 
-  ![High Level Architecture](docs/High%20Level%20Architecture.jpg)
-
 ---
 
 ### 3. 🛠️ Project Initialization
